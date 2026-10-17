@@ -1,0 +1,2 @@
+import type {MetadataRoute} from "next"; import {articles,services} from "@/data/site";
+export default function sitemap():MetadataRoute.Sitemap{const base=process.env.NEXT_PUBLIC_SITE_URL||"http://localhost:5173";const routes=["","/about","/services","/blog","/contact","/consultation","/privacy",...services.map(s=>`/services/${s.slug}`),...articles.map(a=>`/blog/${a.slug}`)];return routes.map(route=>({url:`${base}${route}`,changeFrequency:route.startsWith("/blog/")?"monthly":"weekly",priority:route===""?1:route==="/consultation"?.9:.7}))}

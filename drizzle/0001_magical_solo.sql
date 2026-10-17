@@ -1,0 +1,1 @@
+ALTER TABLE `inquiries` ADD `desired_outcome` text;

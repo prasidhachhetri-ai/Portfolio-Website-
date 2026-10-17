@@ -1,8 +1,7 @@
-import { env } from "cloudflare:workers";
 import { NextResponse } from "next/server";
 import { siteConfig } from "@/data/site";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 type Payload = Record<string, unknown>;
 
 const cleanText = (value: unknown, max: number) => typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -47,21 +46,6 @@ export async function POST(request: Request) {
   if (kind === "consultation" && desiredOutcome.length < 20) return NextResponse.json({ message: "Please describe the business outcome you would like to achieve." }, { status: 400 });
   if (!urlIsValid(websiteUrl)) return NextResponse.json({ message: "Please enter a complete website URL beginning with http:// or https://." }, { status: 400 });
 
-  let stored = false;
-  try {
-    if (env.DB) {
-      await env.DB.prepare(`INSERT INTO inquiries (id, kind, name, email, business_name, phone, website_url, service, message, desired_outcome, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`)
-        .bind(submissionId, kind, name, email, businessName, phone || null, websiteUrl || null, null, message, desiredOutcome || null)
-        .run();
-      stored = true;
-    }
-  } catch (error) {
-    const detail = error instanceof Error ? error.message : "";
-    if (detail.toLowerCase().includes("unique")) return NextResponse.json({ message: "This submission was already accepted." }, { status: 409 });
-    console.error("Inquiry storage failed", error);
-    return NextResponse.json({ message: "Your submission could not be accepted right now. Your information remains in the form, so please try again." }, { status: 500 });
-  }
-
   try {
     const sourceOrigin = new URL(request.url).origin;
     const sourceUrl = new URL(kind === "consultation" ? "/consultation" : "/contact", sourceOrigin).toString();
@@ -98,13 +82,6 @@ export async function POST(request: Request) {
         : "Your enquiry was sent successfully. Thank you—I’ll use these details to respond.",
     }, { status: 201 });
   } catch (error) {
-    if (stored && env.DB) {
-      try {
-        await env.DB.prepare("DELETE FROM inquiries WHERE id = ?").bind(submissionId).run();
-      } catch (rollbackError) {
-        console.error("Inquiry rollback failed", rollbackError);
-      }
-    }
     console.error("FormSubmit delivery failed", error);
     const detail = error instanceof Error ? error.message.toLowerCase() : "";
     if (detail.includes("needs activation")) {

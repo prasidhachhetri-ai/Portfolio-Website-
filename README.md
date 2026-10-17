@@ -1,14 +1,14 @@
 # Prasidha Chhetri — Personal Portfolio Website
 
-Full-stack portfolio and lead-generation website built with Next.js-compatible Vinext and Cloudflare Sites.
+Full-stack portfolio and lead-generation website built with Next.js and ready for Vercel deployment.
 
 ## Local setup
 
 1. Install dependencies with `npm install`.
 2. Copy `.env.example` to `.env.local` and leave `NEXT_PUBLIC_SITE_URL` blank for local work.
-3. Run `npm run dev` for development or `npm run build` followed by `npm start` for the built Worker preview.
+3. Run `npm run dev` for development or `npm run build` followed by `npm start` for the production preview.
 
-The consultation and contact forms are validated server-side and delivered to the verified email address through FormSubmit. The optional D1 binding named `DB` stores a backup copy. Apply the SQL files in `drizzle/` in filename order when D1 backup storage is enabled.
+The consultation and contact forms are validated in a Next.js Route Handler and delivered to the verified email address through FormSubmit.
 
 ## Updating content
 
@@ -25,6 +25,10 @@ When a verified scheduling URL is added to `siteConfig.bookingUrl`, `/consultati
 For production, set `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin so sitemap and metadata URLs use the real domain. No production domain, analytics service, or scheduling URL is configured in this local build.
 
 FormSubmit requires a one-time activation for `prasidhachhetri@gmail.com`. Submit either form once, open the activation email sent by FormSubmit, and click the activation link. After activation, accepted enquiries are forwarded to that inbox. Check the spam folder if the activation message is not visible.
+
+## Deploying to Vercel
+
+Import the GitHub repository with the **Next.js** framework preset. Keep the Build Command as `npm run build` and leave the Output Directory on the Next.js default—do not set it to `dist`. Set `NEXT_PUBLIC_SITE_URL` to the final HTTPS domain in Vercel Environment Variables, then deploy. The build produces the `.next` files and route manifest Vercel requires.
 
 ---
 

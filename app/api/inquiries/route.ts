@@ -46,18 +46,13 @@ export async function POST(request: Request) {
   if (kind === "consultation" && desiredOutcome.length < 20) return NextResponse.json({ message: "Please describe the business outcome you would like to achieve." }, { status: 400 });
   if (!urlIsValid(websiteUrl)) return NextResponse.json({ message: "Please enter a complete website URL beginning with http:// or https://." }, { status: 400 });
 
-  try {
-    const sourceOrigin = new URL(request.url).origin;
-    const sourceUrl = new URL(kind === "consultation" ? "/consultation" : "/contact", sourceOrigin).toString();
-    const deliveryResponse = await fetch(formSubmitEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Origin: sourceOrigin,
-        Referer: sourceUrl,
-      },
-      body: JSON.stringify({
+  const sourceOrigin = new URL(request.url).origin;
+  const sourceUrl = new URL(kind === "consultation" ? "/consultation" : "/contact", sourceOrigin).toString();
+
+  return NextResponse.json({
+    delivery: {
+      endpoint: formSubmitEndpoint,
+      fields: {
         _subject: kind === "consultation" ? `New free consultation request from ${name}` : `New website enquiry from ${name}`,
         _template: "table",
         _replyto: email,
@@ -70,23 +65,10 @@ export async function POST(request: Request) {
         "Business website": websiteUrl || "Not provided",
         "Main message or challenge": message,
         "Desired business outcome": desiredOutcome || "Not provided",
-      }),
-    });
-    const deliveryResult = await deliveryResponse.json().catch(() => null) as { success?: boolean | string; message?: string } | null;
-    const deliveryAccepted = deliveryResponse.ok && deliveryResult?.success !== false && deliveryResult?.success !== "false";
-    if (!deliveryAccepted) throw new Error(deliveryResult?.message || `FormSubmit returned ${deliveryResponse.status}.`);
-
-    return NextResponse.json({
-      message: kind === "consultation"
-        ? "Your consultation request was sent successfully. This does not confirm an appointment; I will follow up to arrange scheduling."
-        : "Your enquiry was sent successfully. Thank you—I’ll use these details to respond.",
-    }, { status: 201 });
-  } catch (error) {
-    console.error("FormSubmit delivery failed", error);
-    const detail = error instanceof Error ? error.message.toLowerCase() : "";
-    if (detail.includes("needs activation")) {
-      return NextResponse.json({ message: `Email delivery is awaiting one-time activation by the site owner. Please email me directly at ${siteConfig.email} until activation is complete.` }, { status: 503 });
-    }
-    return NextResponse.json({ message: `Your message could not be delivered right now. Please try again or email me directly at ${siteConfig.email}.` }, { status: 502 });
-  }
+      },
+    },
+    message: kind === "consultation"
+      ? "Your consultation request was sent successfully. This does not confirm an appointment; I will follow up to arrange scheduling."
+      : "Your enquiry was sent successfully. Thank you—I’ll use these details to respond.",
+  });
 }

@@ -8,7 +8,7 @@ Full-stack portfolio and lead-generation website built with Next.js and ready fo
 2. Copy `.env.example` to `.env.local` and leave `NEXT_PUBLIC_SITE_URL` blank for local work.
 3. Run `npm run dev` for development or `npm run build` followed by `npm start` for the production preview.
 
-The consultation and contact forms are validated in a Next.js Route Handler and delivered to the verified email address through FormSubmit.
+The consultation and contact forms are validated and sanitized in a Next.js Route Handler. After validation, the browser sends the approved fields through FormSubmit's AJAX endpoint and displays success only when FormSubmit accepts the message. This avoids server-to-server delivery blocks on Vercel.
 
 ## Updating content
 

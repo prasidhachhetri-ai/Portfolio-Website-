@@ -5,6 +5,19 @@ import { LoaderCircle } from "lucide-react";
 
 type Kind = "contact" | "consultation";
 
+type ValidationResult = {
+  message?: string;
+  delivery?: {
+    endpoint?: string;
+    fields?: Record<string, string>;
+  };
+};
+
+type FormSubmitResult = {
+  success?: boolean | string;
+  message?: string;
+};
+
 export function InquiryForm({ kind }: { kind: Kind }) {
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -32,8 +45,27 @@ export function InquiryForm({ kind }: { kind: Kind }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, kind, startedAt: startedAt.current, submissionId: submissionId.current }),
       });
-      const result = (await response.json().catch(() => ({ message: "The server returned an unexpected response." }))) as { message?: string };
+      const result = (await response.json().catch(() => ({ message: "The server returned an unexpected response." }))) as ValidationResult;
       if (!response.ok) throw new Error(result.message || "Your message could not be sent.");
+      if (!result.delivery?.endpoint || !result.delivery.fields) throw new Error("The email service is not configured correctly.");
+
+      const deliveryResponse = await fetch(result.delivery.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(result.delivery.fields),
+      });
+      const deliveryResult = (await deliveryResponse.json().catch(() => null)) as FormSubmitResult | null;
+      const deliveryAccepted = deliveryResponse.ok && (deliveryResult?.success === true || deliveryResult?.success === "true");
+      if (!deliveryAccepted) {
+        const detail = deliveryResult?.message?.toLowerCase() || "";
+        if (detail.includes("activation")) {
+          throw new Error("Email delivery is awaiting one-time activation by the site owner. Please try again shortly or email me directly at prasidhachhetri@gmail.com.");
+        }
+        throw new Error("Your message could not be delivered right now. Please try again or email me directly at prasidhachhetri@gmail.com.");
+      }
 
       setState("success");
       setMessage(result.message || "Your submission was accepted.");

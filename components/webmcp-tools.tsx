@@ -18,7 +18,7 @@ export function WebMcpTools() {
         annotations: { readOnlyHint: false, untrustedContentHint: false },
         execute(input) {
           if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).length > 0) throw new Error("This action does not accept input fields.");
-          window.location.assign(new URL("/consultation", window.location.href).toString());
+          window.location.assign(new URL("/consultation#consultation-form", window.location.href).toString());
           return { status: "opened", appointmentConfirmed: false };
         },
       }, { signal: lifecycle.signal })).catch(() => {});

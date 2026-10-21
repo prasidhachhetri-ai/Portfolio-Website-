@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function LegacyConsultationRoute() {
-  redirect("/consultation");
+  redirect("/consultation#consultation-form");
 }

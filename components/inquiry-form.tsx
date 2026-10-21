@@ -84,17 +84,27 @@ export function InquiryForm({ kind }: { kind: Kind }) {
         <div className="field"><label htmlFor={`${kind}-name`}>Full name <span aria-hidden="true">*</span></label><input id={`${kind}-name`} name="name" autoComplete="name" required minLength={2} maxLength={100} /></div>
         <div className="field"><label htmlFor={`${kind}-email`}>Email address <span aria-hidden="true">*</span></label><input id={`${kind}-email`} name="email" type="email" autoComplete="email" required maxLength={160} /></div>
         <div className="field"><label htmlFor={`${kind}-business`}>Business name <span aria-hidden="true">*</span></label><input id={`${kind}-business`} name="businessName" autoComplete="organization" required minLength={2} maxLength={120} /></div>
-        <div className="field"><label htmlFor={`${kind}-phone`}>Phone or WhatsApp <span className="field-hint">(optional)</span></label><input id={`${kind}-phone`} name="phone" type="tel" autoComplete="tel" maxLength={40} /></div>
-
-        {consultation && <div className="field md:col-span-2"><label htmlFor="consultation-website">Business website <span className="field-hint">(optional)</span></label><input id="consultation-website" name="websiteUrl" type="url" inputMode="url" placeholder="https://" maxLength={300} /><span className="field-hint">Include the full address beginning with http:// or https://.</span></div>}
+        <div className="field"><label htmlFor={`${kind}-phone`}>Phone or WhatsApp <span aria-hidden="true">*</span></label><input id={`${kind}-phone`} name="phone" type="tel" autoComplete="tel" required minLength={7} maxLength={40} /></div>
 
         <div className="field md:col-span-2">
-          <label htmlFor={`${kind}-message`}>{consultation ? "Main marketing challenge" : "Message"} <span aria-hidden="true">*</span></label>
-          <textarea id={`${kind}-message`} name="message" required minLength={20} maxLength={3000} placeholder={consultation ? "What are you trying to improve, and what is getting in the way?" : "Share a little about your business, question, or project."} />
+          <label htmlFor={`${kind}-social`}>Social media links for your business <span aria-hidden="true">*</span></label>
+          <input id={`${kind}-social`} name="socialMediaLinks" inputMode="url" required minLength={3} maxLength={1000} placeholder="Facebook, Instagram, LinkedIn, TikTok, or other business profiles" />
+          <span className="field-hint">You can include more than one link.</span>
+        </div>
+
+        {consultation && <div className="field md:col-span-2"><label htmlFor="consultation-website">Business website <span aria-hidden="true">*</span></label><input id="consultation-website" name="websiteUrl" type="url" inputMode="url" placeholder="https://" required maxLength={300} /><span className="field-hint">Include the full address beginning with http:// or https://.</span></div>}
+
+        <div className="field md:col-span-2">
+          <label htmlFor={`${kind}-message`}>What problems are you facing right now? <span aria-hidden="true">*</span></label>
+          <textarea id={`${kind}-message`} name="message" required minLength={20} maxLength={3000} placeholder="Tell me what is not working, where you feel stuck, or what is taking too much time." />
           <span className="field-hint">Please include at least 20 characters.</span>
         </div>
 
-        {consultation && <div className="field md:col-span-2"><label htmlFor="consultation-outcome">Desired business outcome <span aria-hidden="true">*</span></label><textarea id="consultation-outcome" name="desiredOutcome" required minLength={20} maxLength={2000} placeholder="What would meaningful progress look like for your business?" /><span className="field-hint">Please include at least 20 characters.</span></div>}
+        <div className="field md:col-span-2">
+          <label htmlFor={`${kind}-outcome`}>What is your eventual goal? <span aria-hidden="true">*</span></label>
+          <textarea id={`${kind}-outcome`} name="desiredOutcome" required minLength={20} maxLength={2000} placeholder="What would a useful, realistic result look like for your business?" />
+          <span className="field-hint">Please include at least 20 characters.</span>
+        </div>
       </div>
 
       <div className="honeypot" aria-hidden="true"><label htmlFor={`${kind}-company-site`}>Leave this field empty</label><input id={`${kind}-company-site`} name="companyWebsite" tabIndex={-1} autoComplete="off" /></div>

@@ -33,6 +33,7 @@ export async function POST(request: Request) {
   const email = cleanText(body.email, 160).toLowerCase();
   const businessName = cleanText(body.businessName, 120);
   const phone = cleanText(body.phone, 40);
+  const socialMediaLinks = cleanText(body.socialMediaLinks, 1000);
   const websiteUrl = cleanText(body.websiteUrl, 300);
   const message = cleanText(body.message, 3000);
   const desiredOutcome = cleanText(body.desiredOutcome, 2000);
@@ -42,9 +43,8 @@ export async function POST(request: Request) {
 
   if (honeypot) return NextResponse.json({ message: "Submission rejected." }, { status: 400 });
   if (!Number.isFinite(startedAt) || Date.now() - startedAt < 800) return NextResponse.json({ message: "Please take a moment to review your details and submit again." }, { status: 429 });
-  if (!kind || name.length < 2 || !emailIsValid(email) || businessName.length < 2 || message.length < 20 || !submissionId) return NextResponse.json({ message: "Please complete your name, email, business name, and message with valid information." }, { status: 400 });
-  if (kind === "consultation" && desiredOutcome.length < 20) return NextResponse.json({ message: "Please describe the business outcome you would like to achieve." }, { status: 400 });
-  if (!urlIsValid(websiteUrl)) return NextResponse.json({ message: "Please enter a complete website URL beginning with http:// or https://." }, { status: 400 });
+  if (!kind || name.length < 2 || !emailIsValid(email) || businessName.length < 2 || phone.length < 7 || socialMediaLinks.length < 3 || message.length < 20 || desiredOutcome.length < 20 || !submissionId) return NextResponse.json({ message: "Please complete every required field with valid information." }, { status: 400 });
+  if (kind === "consultation" && (!websiteUrl || !urlIsValid(websiteUrl))) return NextResponse.json({ message: "Please enter a complete website URL beginning with http:// or https://." }, { status: 400 });
 
   const sourceOrigin = new URL(request.url).origin;
   const sourceUrl = new URL(kind === "consultation" ? "/consultation" : "/contact", sourceOrigin).toString();
@@ -61,10 +61,11 @@ export async function POST(request: Request) {
         Name: name,
         Email: email,
         "Business name": businessName,
-        "Phone or WhatsApp": phone || "Not provided",
+        "Phone or WhatsApp": phone,
+        "Business social media links": socialMediaLinks,
         "Business website": websiteUrl || "Not provided",
-        "Main message or challenge": message,
-        "Desired business outcome": desiredOutcome || "Not provided",
+        "Problems faced right now": message,
+        "Eventual goal": desiredOutcome,
       },
     },
     message: kind === "consultation"

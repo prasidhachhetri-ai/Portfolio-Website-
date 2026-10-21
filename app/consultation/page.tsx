@@ -18,30 +18,25 @@ const reviewPoints = [
 export default function Consultation() {
   return (
     <main id="main-content">
-      <section className="section">
-        <div className="site-shell grid items-center gap-10 lg:grid-cols-[1.2fr_.8fr]">
-          <div>
+      <section id="consultation-form" className="consultation-intake-section">
+        <div className="site-shell consultation-intake-grid">
+          <div className="consultation-intro">
             <p className="eyebrow">Free consultation</p>
-            <h1 className="page-title mt-4 max-w-5xl">Turn your marketing questions into a practical next step.</h1>
-            <p className="lead mt-7 max-w-4xl">Get a personalized review of your business and a customized digital marketing action plan you can start implementing immediately.</p>
-          </div>
-          <div className="rounded-2xl border border-[#bfd0ea] bg-[#e8f0ff] p-7">
-            <ClipboardCheck className="text-primary" size={32} />
-            <p className="mt-5 font-serif text-2xl leading-tight">Clear recommendations shaped around your goals, customers, and current setup.</p>
-          </div>
-        </div>
-      </section>
+            <h1 className="consultation-intro__title mt-3">Turn your marketing questions into a practical next step.</h1>
+            <p className="consultation-intro__lead mt-5">Get a personalized review of your business and a customized digital marketing action plan you can start implementing immediately.</p>
+            <div className="consultation-intro__note mt-6">
+              <ClipboardCheck className="shrink-0 text-primary" size={26} aria-hidden="true" />
+              <p>Clear recommendations shaped around your goals, customers, and current setup.</p>
+            </div>
 
-      <section className="section-sm soft-section">
-        <div className="site-shell grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
-          <div>
-            <p className="eyebrow">What we will cover</p>
-            <h2 className="mt-3 font-serif text-4xl leading-tight">A focused review of the whole picture.</h2>
-            <ul className="mt-7 grid gap-5">{reviewPoints.map((point) => <li className="flex gap-3" key={point}><Check className="mt-1 shrink-0 text-primary" /><span>{point}</span></li>)}</ul>
-            <div className="mt-8 rounded-xl border border-[#c7d5e9] bg-white p-5 text-sm leading-6 text-[#43536b]"><strong>This is a request, not a confirmed booking.</strong> After you submit, I will review the information and follow up to confirm the appointment. Any paid implementation is discussed and agreed separately.</div>
+            <div className="consultation-cover mt-7">
+              <p className="eyebrow">What we will cover</p>
+              <ul className="mt-4 grid gap-3">{reviewPoints.map((point) => <li className="flex gap-3" key={point}><Check className="mt-0.5 shrink-0 text-primary" size={19} aria-hidden="true" /><span>{point}</span></li>)}</ul>
+            </div>
           </div>
-          <div>
+          <div className="consultation-form-column">
             {siteConfig.bookingUrl ? <a className="button-primary" href={siteConfig.bookingUrl}>Book a FREE CONSULTATION Call</a> : <InquiryForm kind="consultation" />}
+            <div className="consultation-request-note mt-4"><strong>This is a request, not a confirmed booking.</strong> After you submit, I will review the information and follow up to confirm the appointment. Any paid implementation is discussed and agreed separately.</div>
           </div>
         </div>
       </section>
